@@ -3,13 +3,12 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
   Patch,
   Post,
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { classToClass } from 'class-transformer';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import jwtDecode from 'src/utils/jwt-decode';
@@ -17,6 +16,11 @@ import { ICreateUserDTO } from './dto/user-create.dto';
 import { IUpdateUserDto } from './dto/user-update.dto';
 import { User } from './user.entity';
 import { ICreateUserReponse, UserService } from './user.service';
+
+type BodyType = {
+  email: string;
+  password: string;
+};
 
 @Controller('users')
 export class UserController {
@@ -55,9 +59,17 @@ export class UserController {
     await this.userService.delete(id);
   }
 
-  @UseGuards(AuthGuard('local'))
   @Post('login')
-  async login(@Request() req) {
-    return this.authService.login(req.user);
+  async login(@Request() request: Request) {
+    const { email, password } = request.body as unknown as BodyType;
+
+    const user = await this.authService.validateUser(email, password);
+
+    const { access_token } = await this.authService.login(user);
+
+    return {
+      user: classToClass(user),
+      access_token,
+    };
   }
 }

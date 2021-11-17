@@ -19,8 +19,8 @@ export class TokenService {
     private authService: AuthService,
   ) {}
 
-  async findOne(oldToken: string): Promise<Token> {
-    const validToken = await this.tokenRepository.findOne({ hash: oldToken });
+  async findOne(hash: string): Promise<Token> {
+    const validToken = await this.tokenRepository.findOne({ hash: hash });
 
     if (!validToken) {
       throw new HttpException(

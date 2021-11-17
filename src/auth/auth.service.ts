@@ -6,6 +6,10 @@ import { TokenService } from 'src/token/token.service';
 import { User } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 
+type LoginResponse = {
+  access_token: string;
+};
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -14,7 +18,7 @@ export class AuthService {
     private tokenService: TokenService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<any> {
+  async validateUser(email: string, password: string): Promise<User> {
     const user = await this.usersService.findByEmail(email);
 
     if (!user) {
@@ -42,7 +46,7 @@ export class AuthService {
     return classToClass(user);
   }
 
-  async login(user: User) {
+  async login(user: User): Promise<LoginResponse> {
     const payload = { name: user.name, email: user.email, sub: user.id };
     const token = this.jwtService.sign(payload);
 

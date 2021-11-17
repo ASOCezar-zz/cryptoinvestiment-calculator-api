@@ -7,6 +7,6 @@ export class AppController {
 
   @Get()
   async getHello(): Promise<void> {
-    return await this.appService.setCoinValue();
+    return console.log('Running');
   }
 }

@@ -1,3 +1,4 @@
+import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Coin } from './coin.entity';
@@ -7,7 +8,14 @@ export class CoinService {
   constructor(
     @Inject('COIN_REPOSITORY')
     private coinRepository: Repository<Coin>,
+    private httpService: HttpService,
   ) {}
+
+  async list(): Promise<Coin[]> {
+    const coins = await this.coinRepository.find();
+
+    return coins;
+  }
 
   async findByName(name: string): Promise<Coin> {
     const coin = await this.coinRepository.findOne({ name });
@@ -46,8 +54,20 @@ export class CoinService {
 
     coin.price = price;
 
-    console.log(id);
-
     await this.coinRepository.save(coin);
+  }
+
+  async setCoinValue(): Promise<void> {
+    this.httpService
+      .get(
+        'https://api.nomics.com/v1/currencies/ticker?key=5b4403c4d27b6cb1ef1e152abf6a823b288964b4&ids=BTC,ETH,LTC,XRP,BNB&interval=1h&convert=BRL&per-page=5&page=1',
+      )
+      .subscribe((res) => {
+        const price = res.data.map((el) => el.price);
+
+        for (let i = 0; i <= 4; i++) {
+          this.setPrice(i + 1, price[i]);
+        }
+      });
   }
 }

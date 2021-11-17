@@ -59,7 +59,7 @@ export class UserService {
       );
     }
 
-    return user;
+    return classToClass(user);
   }
 
   async create(data: ICreateUserDTO): Promise<ICreateUserReponse> {
