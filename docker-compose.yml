@@ -1,23 +1,5 @@
 version: "3"
 services:
-  app:
-    build: .
-    container_name: api-crypto-calc
-    command: sh -c "npm run start"
-    ports:
-      - 3333:3333
-    volumes:
-      - ./home/node/app
-    links:
-      - db
-    depends_on:
-      - db
-      - redis
-    environment:
-      - DB_HOST=db
-      - DB_USER=admin
-      - DB_PASS=admin
-      - DB_NAME=db-cryptocalc
   db:
     image: mysql:latest
     command: --default-authentication-plugin=mysql_native_password
