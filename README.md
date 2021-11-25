@@ -83,4 +83,4 @@ A aplicação disponibiliza 5 tipos de criptomoedas para cadastrar um investimen
 
 # Agradecimentos
 
-Obrigado à galera da DIO e da própria Eduzz, por fornecer tanto material educativo de qualidade que permitiu que esse projeto pode ser realizado.
+Obrigado à galera da DIO e da própria Eduzz, por fornecer tanto material educativo de qualidade que permitiu que esse projeto fosse realizado.
