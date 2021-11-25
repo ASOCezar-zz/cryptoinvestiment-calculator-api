@@ -47,6 +47,24 @@ export class InvestimentController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('/:id')
+  async find(
+    @Request() request: Request,
+    @Param('id') investimentId: number,
+  ): Promise<Investiment> {
+    const { id } = jwtDecode(request.headers['authorization']);
+
+    const user = await this.userService.findById(+id);
+
+    const investiment = await this.investimentService.findOne(
+      user,
+      investimentId,
+    );
+
+    return investiment;
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('create')
   async create(
     @Body() data: CreateInvestimentBodyType,
@@ -87,7 +105,6 @@ export class InvestimentController {
     return investiment;
   }
 
-  // criar o metodo delete
   @UseGuards(JwtAuthGuard)
   @Delete('delete/:id')
   async delete(

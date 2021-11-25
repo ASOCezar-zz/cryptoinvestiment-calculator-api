@@ -12,6 +12,7 @@ import { classToClass } from 'class-transformer';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import jwtDecode from 'src/utils/jwt-decode';
+import { IRecoverPasswordDTO } from './dto/recover-password.dto';
 import { ICreateUserDTO } from './dto/user-create.dto';
 import { IUpdateUserDto } from './dto/user-update.dto';
 import { User } from './user.entity';
@@ -29,9 +30,13 @@ export class UserController {
     private authService: AuthService,
   ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  async list(): Promise<User[]> {
-    return this.userService.findAll();
+  async list(@Request() request: Request): Promise<User> {
+    const { id } = jwtDecode(request.headers['authorization']);
+    const user = await this.userService.findById(+id);
+
+    return user;
   }
 
   @Post('register')
@@ -71,5 +76,16 @@ export class UserController {
       user: classToClass(user),
       access_token,
     };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('change-password')
+  async changePassword(
+    @Request() request: Request,
+    @Body() data: IRecoverPasswordDTO,
+  ): Promise<void> {
+    const { id } = jwtDecode(request.headers['authorization']);
+
+    await this.userService.changePassword(+id, data);
   }
 }

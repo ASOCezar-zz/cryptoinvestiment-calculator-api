@@ -1,4 +1,3 @@
-import { Exclude } from 'class-transformer';
 import { Investiment } from 'src/investiment/investiment.entity';
 import {
   Entity,

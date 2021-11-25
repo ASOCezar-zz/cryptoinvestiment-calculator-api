@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import InvestimentCreateDTO from './dto/investiment-create.dto';
@@ -8,17 +9,36 @@ import { Investiment } from './investiment.entity';
 @Injectable()
 export class InvestimentService {
   constructor(
-    @Inject('INVESTIMENT_REPOSITORY')
+    @InjectRepository(Investiment)
     private investimentRepository: Repository<Investiment>,
   ) {}
 
   async findByUserId(user: User): Promise<Investiment[]> {
     const investiments = await this.investimentRepository.find({
-      user,
-      isActive: true,
+      where: { user, isActive: true },
+      relations: ['coin'],
     });
 
     return investiments;
+  }
+
+  async findOne(user: User, id: number): Promise<Investiment> {
+    const investiment = await this.investimentRepository.findOne({
+      where: { user, id, isActive: true },
+      relations: ['coin'],
+    });
+
+    if (!investiment) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          message: 'Investiment not found',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    return investiment;
   }
 
   async create(investiment: InvestimentCreateDTO): Promise<Investiment> {

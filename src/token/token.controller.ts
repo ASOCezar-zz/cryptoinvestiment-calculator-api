@@ -1,8 +1,7 @@
 import { Body, Controller, Post, Put } from '@nestjs/common';
 import { classToClass } from 'class-transformer';
-import { verify } from 'jsonwebtoken';
 import { AuthService } from 'src/auth/auth.service';
-import { jwtConstants } from 'src/auth/constants';
+import { SendMailService } from 'src/jobs/sendMail-producer.service';
 import { User } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 import { ITokenRefreshDTO } from './dto/token-refresh.dto';

@@ -1,0 +1,50 @@
+version: "3"
+services:
+  app:
+    build: .
+    container_name: api-crypto-calc
+    command: sh -c "npm run start"
+    ports:
+      - 3333:3333
+    volumes:
+      - ./home/node/app
+    links:
+      - db
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DB_HOST=db
+      - DB_USER=admin
+      - DB_PASS=admin
+      - DB_NAME=db-cryptocalc
+  db:
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_DATABASE: ${DATABASE_NAME}
+    ports:
+      - 3306:3306
+    volumes:
+      - .docker/db:var/lib/mysql/data
+    networks:
+      - mysql-compose-network
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - mysql-compose-network
+  redis:
+    image: 'bitnami/redis:latest'
+    container_name: cryptocalc-redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - 6379:6379
+networks: 
+  mysql-compose-network:
+    driver: bridge

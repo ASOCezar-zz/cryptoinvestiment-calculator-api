@@ -1,21 +1,21 @@
 import { forwardRef, Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from 'src/auth/auth.module';
 import { CoinModule } from 'src/coin/coin.module';
 import { UserModule } from 'src/user/user.module';
-import { DatabaseModule } from '../database/database.module';
 import { InvestimentController } from './investiment.controller';
-import { investimentProviders } from './investiment.providers';
+import { Investiment } from './investiment.entity';
 import { InvestimentService } from './investiment.service';
 
 @Module({
   imports: [
-    DatabaseModule,
+    TypeOrmModule.forFeature([Investiment]),
     UserModule,
     CoinModule,
     forwardRef(() => AuthModule),
   ],
   controllers: [InvestimentController],
-  providers: [...investimentProviders, InvestimentService],
+  providers: [InvestimentService],
   exports: [InvestimentService],
 })
 export class InvestimentModule {}

@@ -5,6 +5,8 @@ import { ICreateUserDTO } from './dto/user-create.dto';
 import { User } from './user.entity';
 import { IUpdateUserDto } from './dto/user-update.dto';
 import { classToClass } from 'class-transformer';
+import { IRecoverPasswordDTO } from './dto/recover-password.dto';
+import { InjectRepository } from '@nestjs/typeorm';
 
 export interface ICreateUserReponse {
   id: number;
@@ -22,7 +24,7 @@ export interface IUpdateUserProps {
 @Injectable()
 export class UserService {
   constructor(
-    @Inject('USER_REPOSITORY')
+    @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
 
@@ -118,7 +120,7 @@ export class UserService {
         email: data.email,
       });
 
-      if (emailInUse) {
+      if (emailInUse && emailInUse.id !== user.id) {
         throw new HttpException(
           {
             status: HttpStatus.BAD_REQUEST,
@@ -187,7 +189,14 @@ export class UserService {
     return classToClass(user);
   }
 
-  async delete(id: string) {
+  async changePassword(id: number, data: IRecoverPasswordDTO): Promise<void> {
+    const user = await this.userRepository.findOne({ id });
+
+    user.password = await hash(data.password, 8);
+    await this.userRepository.save(user);
+  }
+
+  async delete(id: string): Promise<void> {
     await this.userRepository.delete(id);
   }
 }

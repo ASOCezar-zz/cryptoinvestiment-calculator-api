@@ -1,12 +1,13 @@
 import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Coin } from './coin.entity';
 
 @Injectable()
 export class CoinService {
   constructor(
-    @Inject('COIN_REPOSITORY')
+    @InjectRepository(Coin)
     private coinRepository: Repository<Coin>,
     private httpService: HttpService,
   ) {}
